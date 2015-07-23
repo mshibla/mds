@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS envs(
 	PRIMARY KEY ( id )
 ) ENGINE=INNODB;
 
-INSERT INTO envs ( 'name' ) VALUES ( 'CI' );
-INSERT INTO envs ( 'name' ) VALUES ( 'QA' );
-INSERT INTO envs ( 'name' ) VALUES ( 'Prod' );
+INSERT INTO envs ( name ) VALUES ( 'CI' );
+INSERT INTO envs ( name ) VALUES ( 'QA' );
+INSERT INTO envs ( name ) VALUES ( 'Prod' );

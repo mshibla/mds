@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS locations(
 		ON DELETE CASCADE
 ) ENGINE=INNODB;
 
-INSERT INTO locations ( 'name', 'type_id', 'location' )
+INSERT INTO locations ( name, type_id, location )
 	SELECT
 		'artifactory-edx-builds-local' AS 'name',
 		id,

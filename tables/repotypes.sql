@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS repotypes(
 	PRIMARY KEY ( id )
 ) ENGINE=INNODB;
 
-INSERT INTO repotypes ( 'name' ) VALUES ( 'artifactory' );
+INSERT INTO repotypes ( name ) VALUES ( 'artifactory' );
