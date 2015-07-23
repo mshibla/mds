@@ -10,3 +10,11 @@ CREATE TABLE IF NOT EXISTS locations(
 		REFERENCES repotypes( id )
 		ON DELETE CASCADE
 ) ENGINE=INNODB;
+
+INSERT INTO locations ( 'name', 'type_id', 'location' )
+	SELECT
+		'artifactory-edx-builds-local' AS 'name',
+		id,
+		'https://artifactory.amplify.com/artifactory/edx-builds-local' AS 'location'
+	FROM repotypes
+	WHERE name = 'artifactory';

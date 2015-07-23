@@ -4,3 +4,7 @@ CREATE TABLE IF NOT EXISTS envs(
 	expired DATE,
 	PRIMARY KEY ( id )
 ) ENGINE=INNODB;
+
+INSERT INTO envs ( 'name' ) VALUES ( 'CI' );
+INSERT INTO envs ( 'name' ) VALUES ( 'QA' );
+INSERT INTO envs ( 'name' ) VALUES ( 'Prod' );

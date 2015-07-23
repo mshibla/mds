@@ -4,3 +4,5 @@ CREATE TABLE IF NOT EXISTS repotypes(
 	expired DATE,
 	PRIMARY KEY ( id )
 ) ENGINE=INNODB;
+
+INSERT INTO repotypes ( 'name' ) VALUES ( 'artifactory' );
