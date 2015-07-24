@@ -131,7 +131,7 @@ def update_artifact_flag(conn, artifact_id, flag_id, value=None):
 		filter(Flagmap.flag_id == flag_id).\
 		filter(Flagmap.deleted.is_(None))
 	existing = q.all()
-	if existing is not None:
+	if existing:
 		for row in existing:
 			row.value = value
 	else:
