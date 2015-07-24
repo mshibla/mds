@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import mds
+from mds import *
 
-conn = Artifacts.setup_connection()
+conn = MDS()
 
-for row in session.query(Env, Env.name).all():
+for row in conn.session.query(Env, Env.name).all():
 	print row.Env, row.name
