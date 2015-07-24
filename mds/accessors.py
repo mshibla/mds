@@ -28,6 +28,20 @@ def get_flags_by_id(conn, id=None):
 		q = q.filter(Flag.id == id)
 	return q.all()
 
+def get_flag_id(conn, name, env):
+	e = conn.session.query(Env).\
+		filter(Env.name == env).\
+		filter(Env.deleted.is_(None))
+	existing = e.first()
+	env_id = None
+	if existing is not None:
+		env_id = existing.id
+		q = conn.session.query(Flag).\
+			filter(Flag.name == name).\
+			filter(Flag.env_id == env_id).\
+			filter(Flag.deleted.is_(None))
+		return q.all()
+		
 def get_repotypes(conn, name=None):
 	q = conn.session.query(Repotype).\
 		filter(Repotype.deleted.is_(None))
