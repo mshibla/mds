@@ -116,7 +116,7 @@ def add_artifact(conn, name, version, location):
 		filter(Location.deleted.is_(None)).first()
 	q = conn.session.query(Artifact).\
 		filter(Artifact.name == name).\
-		filter(Artifact.vesion == version).\
+		filter(Artifact.version == version).\
 		filter(Artifact.location_id == l.id).\
 		filter(Artifact.deleted.is_(None))
 	existing = q.all()
