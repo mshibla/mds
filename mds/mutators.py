@@ -114,9 +114,16 @@ def add_artifact(conn, name, version, location):
 	l = conn.session.query(Location).\
 		filter(Location.name == location).\
 		filter(Location.deleted.is_(None)).first()
-	a = Artifact(name=name, version=version, location_id=l.id)
-	conn.session.add(a)
-	conn.session.commit()
+	q = conn.session.query(Artifact).\
+		filter(Artifact.name=name).\
+		filter(Artifact.vesion=version).\
+		filter(Artifact.location_id=l.id).\
+		filter(Artifact.deleted.is_(None))
+	existing = q.all()
+	if existing is None:
+		a = Artifact(name=name, version=version, location_id=l.id)
+		conn.session.add(a)
+		conn.session.commit()
 
 def update_artifact_flag(conn, artifact_id, flag_id, value=None):
 	q = conn.session.query(Flagmap).\
