@@ -20,7 +20,7 @@ class MDS:
 		self.session = None
 
 		self.setup_connection()
-		""" self.setup_tables() """
+		self.setup_tables()
 
 	def setup_connection(self):
 		"""
@@ -30,7 +30,7 @@ class MDS:
 		self.engine = create_engine(db)
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
-		self.metadata = MetaData(self.engine)
+		""" self.metadata = MetaData(self.engine) """
 
 	def setup_tables(self):
 		"""
