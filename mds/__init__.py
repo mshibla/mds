@@ -27,7 +27,7 @@ class MDS:
 		Create DB session
 		"""
 		db = 'mysql://jenkins:jenkins@qa-mds1.cs4kcrm7ceog.us-east-1.rds.amazonaws.com/mds'
-		self.engine = create_engine(db)
+		self.engine = create_engine(db, echo=True)
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
 		""" self.metadata = MetaData(self.engine) """
