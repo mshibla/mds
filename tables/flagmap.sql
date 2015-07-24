@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS flagmap(
 	artifact_id INT NOT NULL,
 	flag_id INT NOT NULL,
 	value VARCHAR(20),
-	expired DATE,
+	deleted DATETIME,
 	PRIMARY KEY ( id ),
 	INDEX artifact_idx ( artifact_id ),
 	INDEX flag_idx ( flag_id ),

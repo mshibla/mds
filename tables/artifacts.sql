@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS artifacts(
 	name VARCHAR(50),
 	version VARCHAR(30),
 	location_id INT NOT NULL,
-	expired DATE,
+	deleted DATETIME,
 	PRIMARY KEY ( id ),
 	INDEX location_idx ( location_id ),
 	FOREIGN KEY ( location_id )

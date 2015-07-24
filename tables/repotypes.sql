@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS repotypes(
 	id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(20),
-	expired DATE,
+	deleted DATETIME,
 	PRIMARY KEY ( id )
 ) ENGINE=INNODB;
 

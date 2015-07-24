@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS locations(
 	name VARCHAR(40),
 	type_id INT NOT NULL,
 	location VARCHAR(100),
-	expired DATE,
+	deleted DATETIME,
 	PRIMARY KEY ( id ),
 	INDEX type_idx ( type_id ),
 	FOREIGN KEY ( type_id )
