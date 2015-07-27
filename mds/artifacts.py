@@ -38,7 +38,7 @@ def query(conn, artifact_id=None, artifact_name=None, artifact_version=None, env
 			location_id = l.first().id
 			q = q.filter(mds.Artifact.location_id == location_id)
 		elif repotype_name:
-			repotype_id = get_repotypes(name=repotype_name)[0].id
+			repotype_id = mds.repotypes.get_repotypes(conn, name=repotype_name)[0].id
 			l = conn.session.query(mds.Location).\
 				filter(mds.Location.deleted.is_(None)).\
 				filter(mds.Location.type_id == repotype_id).\
@@ -64,7 +64,7 @@ def query(conn, artifact_id=None, artifact_name=None, artifact_version=None, env
 			flag = q.first()
 			f = f.filter(mds.Flagmap.flag_id == flag.id)
 		if flag_name and env_name and not env_id and not flag_id:
-			env_id = get_envs(name = env_name)[0].id
+			env_id = mds.envs.get_envs(conn, name = env_name)[0].id
 			q = conn.session.query(mds.Flag).\
 				filter(mds.Flag.name == flag_name).\
 				filter(mds.Flag.env_id == env_id).\
