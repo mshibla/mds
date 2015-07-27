@@ -1,0 +1,193 @@
+#!/usr/bin/python
+
+import mds
+import argparse
+import sys
+import pprint
+
+parser = argparse.ArgumentParser(description='MDS CLI')
+
+subparsers = parser.add_subparsers(help='commands')
+command = None
+
+# query command
+query_parser = subparsers.add_parser('query', help='query data')
+query_parser.add_argument('--artifact', '-a', action="store", dest="artifact_name")
+query_parser.add_argument('--artifact_version', action="store", dest="artifact_version")
+query_parser.add_argument('--location', action="store", dest="location_value")
+query_parser.add_argument('--repotype', action="store", dest="repotype_name")
+query_parser.add_argument('--location_name', action="store", dest="location_name")
+query_parser.add_argument('--env', action="store", dest="env_name")
+query_parser.add_argument('--flag', action="store", dest="flag_name")
+query_parser.add_argument('--flag_value', action="store", dest="flagmap_value")
+query_parser.set_defaults(command='query')
+
+# add command
+add_parser = subparsers.add_parser('add', help='add data')
+add_parser.add_argument('--artifact', '-a', action="store", dest="artifact_name")
+add_parser.add_argument('--artifact_version', action="store", dest="artifact_version")
+add_parser.add_argument('--location', action="store", dest="location_value")
+add_parser.add_argument('--repotype', action="store", dest="repotype_name")
+add_parser.add_argument('--location_name', action="store", dest="location_name")
+add_parser.add_argument('--env', action="store", dest="env_name")
+add_parser.add_argument('--flag', action="store", dest="flag_name")
+add_parser.add_argument('--flag_value', action="store", dest="flagmap_value")
+add_parser.set_defaults(command='add')
+
+# update command
+update_parser = subparsers.add_parser('update', help='update data')
+update_parser.add_argument('--artifact', '-a', action="store", dest="artifact_name")
+update_parser.add_argument('--artifact_version', action="store", dest="artifact_version")
+update_parser.add_argument('--location', action="store", dest="location_value")
+update_parser.add_argument('--repotype', action="store", dest="repotype_name")
+update_parser.add_argument('--location_name', action="store", dest="location_name")
+update_parser.add_argument('--env', action="store", dest="env_name")
+update_parser.add_argument('--flag', action="store", dest="flag_name")
+update_parser.add_argument('--flag_value', action="store", dest="flagmap_value")
+update_parser.set_defaults(command='update')
+
+parser.add_argument('--version', action="version", version='%(prog)s 1.0.0')
+parser.add_argument('--verbose', action="store_true", default=False)
+
+results = parser.parse_args()
+
+if not results.command:
+	print "No valid command given, exiting."
+	parser.print_help()
+	sys.exit(2)
+
+conn = mds.MDS()
+
+if results.command == "query":
+	retval = mds.artifacts.query(conn, **vars(results))
+	for artifact_id in retval:
+		artifact = retval[artifact_id]['artifact']
+		flags = retval[artifact_id]['flags']
+		print "Name:     " + artifact.name
+		print "Version:  " + artifact.version
+		print "Location: " + artifact.location.location
+		for flag in flags:
+			if flag.env:
+				print flag.name + " " + flag.env.name
+			else:
+				print flag.name
+		print
+	sys.exit(0)
+
+if results.command == "add":
+	if results.flagmap_value and results.flag_name and results.artifact_name and results.artifact_version and (results.location_name or results.location_value):
+		locs = None
+		if results.location_name:
+			locs = mds.locations.get_locations(conn, name=results.location_name)
+		else:
+			locs = mds.locations.get_locations(conn, location=results.location_value)
+		query_args = { 'artifact_name': results.artifact_name, 'artifact_version': results.artifact_version, 'location_id': locs[0].id }
+		try:
+			artifacts = mds.artifacts.query(conn, **query_args)
+		except:
+			print "Failed to find artifact with:"
+			pprint.pprint(query_args)
+			sys.exit(6)
+		if results.env_name:
+			env = mds.envs.get_envs(conn, name=results.env_name)
+			query_args = { 'name': results.flag_name, 'env_id': env.id }
+			try:
+				flags = mds.flags.get_flags(conn, **query_args)
+			except:
+				print "Failed to find flag with:"
+				pprint.pprint(query_args)
+				sys.exit(7)
+		else:
+			flags = mds.flags.get_flags(conn, name=results.flag_name)
+		add_args = { 'artifact_id': artifacts[0].id, 'flag_id': flags[0].id, 'value': results.flagmap_value }
+		try:
+			mds.flagmap.add_flagmap(conn, **add_args)
+		except:
+			print "Failed to add flagmap with:"
+			pprint.pprint(add_args)
+			sys.exit(8)
+		sys.exit(0)
+	elif results.flag_name and results.artifact_name and results.artifact_version and (results.location_name or results.location_value):
+		locs = None
+		if results.location_name:
+			locs = mds.locations.get_locations(conn, name=results.location_name)
+		else:
+			locs = mds.locations.get_locations(conn, location=results.location_value)
+		query_args = { 'artifact_name': results.artifact_name, 'artifact_version': results.artifact_version, 'location_id': locs[0].id }
+		try:
+			retval = mds.artifacts.query(conn, **query_args)
+		except:
+			print "Failed to find artifact with:"
+			pprint.pprint(query_args)
+			sys.exit(6)
+		for artifact in retval:
+			artifact_id = artifact
+			break
+		if results.env_name:
+			env = mds.envs.get_envs(conn, name=results.env_name)[0]
+			query_args = { 'name': results.flag_name, 'env': env.name}
+			try:
+				flags = mds.flags.get_flag(conn, **query_args)
+			except:
+				print "Failed to find flag with:"
+				pprint.pprint(query_args)
+				sys.exit(7)
+		else:
+			flags = mds.flags.get_flags(conn, name=results.flag_name)
+		add_args = { 'artifact_id': artifact_id, 'flag_id': flags[0].id }
+		try:
+			mds.flagmap.add_flagmap(conn, **add_args)
+		except:
+			print "Failed to add flagmap with:"
+			pprint.pprint(add_args)
+			sys.exit(8)
+		sys.exit(0)
+	elif results.artifact_name and results.artifact_version and (results.location_name or results.location_value):
+		locs = None
+		if results.location_name:
+			locs = mds.locations.get_locations(conn, name=results.location_name)
+		else:
+			locs = mds.locations.get_locations(conn, location=results.location_value)
+		add_args = { 'name': results.artifact_name, 'version': results.artifact_version, 'location_name': locs[0].name }
+		try:
+			mds.artifacts.add_artifact(conn, **add_args)
+		except:
+			print "Failed to add artifact with:"
+			pprint.pprint(add_args)
+			sys.exit(3)
+		sys.exit(0)
+	elif results.location_name and results.location_value and results.repotype_name:
+		repo = mds.repotypes.get_repotypes(conn, name=results.repotype_name)[0]
+		add_args = { 'name': results.location_name, 'location': results.location_value, 'type_id': repo.id }
+		try:
+			mds.locations.add_location(conn, **add_args)
+		except:
+			print "Failed to add location with:"
+			pprint.pprint(add_args)
+			sys.exit(4)
+		sys.exit(0)
+	elif results.repotype_name:
+		try:
+			mds.repotypes.add_repotype(conn, name=results.repotype_name)
+		except:
+			print "Failed to add repotype with:"
+			pprint.pprint({'name': results.repotype_name})
+			sys.exit(5)
+		sys.exit(0)
+	elif results.flag_name:
+		if results.env_name:
+			env = mds.envs.get_envs(conn, name=results.env_name)
+			add_args = { 'name': results.flag_name, 'env_id': env[0].id }
+			try:
+				mds.flags.add_flag(conn, **add_args)
+			except:
+				print "Failed to add flag with:"
+				pprint.pprint(add_args)
+				sys.exit(8)
+			sys.exit(0)
+	elif results.env_name:
+		mds.envs.add_env(conn, name=results.env_name)
+		sys.exit(0)
+
+if results.command == "update":
+	pass
